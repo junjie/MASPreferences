@@ -15,5 +15,6 @@
 @property (nonatomic, readonly) NSString *toolbarItemIdentifier;
 @property (nonatomic, readonly) NSImage *toolbarItemImage;
 @property (nonatomic, readonly) NSString *toolbarItemLabel;
+@property (nonatomic, readonly) id initialFirstResponder;
 
 @end

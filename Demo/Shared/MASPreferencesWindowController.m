@@ -11,7 +11,8 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
 @interface MASPreferencesWindowController () // Private
 
 - (void)updateViewControllerWithAnimation:(BOOL)animate;
-
+- (void)setContentViewWithController:(NSViewController <MASPreferencesViewController> *)vc;
+- (void)resetFirstResponderInViewController:(NSViewController <MASPreferencesViewController> *)vc;
 @end
 
 #pragma mark -
@@ -91,7 +92,7 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    [self resetFirstResponderInView:[[self window] contentView]];
+//    [self resetFirstResponderInView:[[self window] contentView]];
 }
 
 #pragma mark -
@@ -241,12 +242,26 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
     
     // Add controller view only after animation is ended to avoid blinking
     if (animate)
-        [self performSelector:@selector(setContentView:) withObject:controllerView afterDelay:0.0];
+        [self performSelector:@selector(setContentViewWithController:) withObject:controller afterDelay:0.0];
     else
-        [self performSelector:@selector(setContentView:) withObject:controllerView];
+        [self performSelector:@selector(setContentViewWithController:) withObject:controller];
     
     // Insert view controller into responder chain
     [self patchResponderChain];
+}
+
+- (void)resetFirstResponderInViewController:(NSViewController <MASPreferencesViewController> *)vc {
+	id initialFR = [vc initialFirstResponder];
+	
+	if (initialFR) {
+		if ([initialFR canBecomeKeyView]) {
+			// We have our own initial FR, return now
+			[self.window makeFirstResponder:initialFR];
+			return;
+		}
+	}
+	
+	[self resetFirstResponderInView:vc.view];
 }
 
 - (void)resetFirstResponderInView:(NSView *)view
@@ -264,10 +279,10 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
     }
 }
 
-- (void)setContentView:(NSView *)view
+- (void)setContentViewWithController:(NSViewController <MASPreferencesViewController> *)vc
 {
-    [self.window.contentView addSubview:view];
-    [self resetFirstResponderInView:self.window.contentView];
+    [self.window.contentView addSubview:vc.view];
+    [self resetFirstResponderInViewController:vc];
 }
 
 - (void)toolbarItemDidClick:(id)sender
