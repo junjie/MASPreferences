@@ -73,6 +73,15 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
 - (void)windowWillClose:(NSNotification *)notification
 {
     [self commitPreferences];
+	
+	// Post notification that we're going to be dismissed. Lets parent window
+	// clear us up instead of auto releasing this, since parent window might
+	// be holding us in an object to check if we're already opened
+	[[NSNotificationCenter defaultCenter] postNotificationName:kNotifPreferenceWindowDidClose
+														object:nil];
+	
+	// Don't auto release, see above
+	// [self autorelease];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -181,6 +190,10 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
 
 #pragma mark -
 
+- (void)updateViewControllerAnimated {
+	[self updateViewControllerWithAnimation:YES];
+}
+
 - (void)updateViewControllerWithAnimation:(BOOL)animate
 {
     // Retrieve currently selected view controller
@@ -260,6 +273,10 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
 - (void)toolbarItemDidClick:(id)sender
 {
     [self updateViewControllerWithAnimation:YES];
+//    [self updateViewControllerWithAnimation:YES];
+	[self performSelector:@selector(updateViewControllerAnimated)
+			   withObject:nil
+			   afterDelay:0.0];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:kMASPreferencesWindowControllerDidChangeViewNotification object:self];
 }

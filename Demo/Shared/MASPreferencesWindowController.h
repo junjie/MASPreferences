@@ -3,6 +3,8 @@
 //  Copyright 2011 Shpakovski. All rights reserved.
 //
 
+#define kNotifPreferenceWindowDidClose	@"kNotifPreferenceWindowDidClose"
+
 extern NSString *const kMASPreferencesWindowControllerDidChangeViewNotification;
 
 @interface MASPreferencesWindowController : NSWindowController <NSToolbarDelegate, NSWindowDelegate>
