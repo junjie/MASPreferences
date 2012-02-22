@@ -285,9 +285,10 @@ NSString *const kMASPreferencesWindowControllerDidChangeViewNotification = @"MAS
     [self resetFirstResponderInViewController:vc];
 }
 
-- (void)toolbarItemDidClick:(id)sender
+- (void)toolbarItemDidClick:(NSToolbarItem*)sender
 {
-    [self updateViewControllerWithAnimation:YES];
+	[self.window.toolbar setSelectedItemIdentifier:sender.itemIdentifier];
+	
 //    [self updateViewControllerWithAnimation:YES];
 	[self performSelector:@selector(updateViewControllerAnimated)
 			   withObject:nil
